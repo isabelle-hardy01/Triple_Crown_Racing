@@ -70,12 +70,27 @@ GROUP BY Horse, year
 HAVING COUNT(*) >= 2
 ORDER BY WINS DESC;
 
--- Horses, jockey, trainer  that have won the triple crown
+-- Horses, jockey, trainer that have won the triple crown
 SELECT Horse, Jockey, Trainer, year
 FROM Races
 WHERE final_place = 1 
 GROUP BY Horse, Jockey, Trainer, year
 HAVING COUNT(*) = 3;
+
+-- list top 5 trainers with most wins
+SELECT TOP 5 Trainer, COUNT(*) AS Wins
+FROM Races
+WHERE final_place = 1
+GROUP BY trainer
+ORDER BY Wins DESC;
+
+-- list of top 10 jockies with most wins
+SELECT TOP 10 Jockey, COUNT(*) AS Wins
+FROM Races
+WHERE final_place = 1
+GROUP BY jockey
+ORDER BY Wins DESC;
+
 
 -- races on wet vs dry track
 SELECT Year, Race,CASE 
@@ -83,14 +98,14 @@ WHEN track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' EN
 FROM TrackConditions
 ORDER BY year, race;
 
--- how many races were done on wet vs dry tracks
+-- how many races were done on wet vs dry tracks 
 SELECT CASE 
 WHEN track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END AS Track_Status, COUNT(*) AS Total_Races
 FROM TrackConditions
 GROUP BY CASE 
 WHEN track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END;
 
--- track condition for each race and how many were wet vs dry
+-- track condition for each race and how many were wet vs dry (list of each race + total # on wet, # on dry...)
 SELECT Race, CASE 
 WHEN track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END AS Track_Status,COUNT(*) AS Total_Races
 FROM TrackConditions
@@ -98,7 +113,7 @@ GROUP BY race, CASE
 WHEN track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END
 ORDER BY race;
 
-	-- track condition / if wet or dry when triple crown happened
+-- track condition / if wet or dry when triple crown happened
 SELECT T.Year, T.Race, T.Track_Condition, CASE 
 WHEN T.track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END AS Track_Status
 FROM TrackConditions T JOIN (SELECT year 
@@ -120,20 +135,6 @@ FROM TrackConditions T JOIN (SELECT year
 							 GROUP BY Horse, year HAVING COUNT(*) = 3) AS TripleCrownYears ON T.year = TripleCrownYears.year
 GROUP BY CASE 
 WHEN T.track_condition IN ('Sloppy', 'Muddy') THEN 'Wet Track' ELSE 'Dry Track' END;
-
--- list top 5 trainers with most wins
-SELECT TOP 5 Trainer, COUNT(*) AS Wins
-FROM Races
-WHERE final_place = 1
-GROUP BY trainer
-ORDER BY Wins DESC;
-
--- list of top 10 jockies with most wins
-SELECT TOP 10 Jockey, COUNT(*) AS Wins
-FROM Races
-WHERE final_place = 1
-GROUP BY jockey
-ORDER BY Wins DESC;
 
 -- attendance over the years
 SELECT year, AVG(attendance) AS Avg_Attendance
@@ -237,4 +238,5 @@ SELECT TOP 10
 FROM Races
 WHERE final_place = 1
 GROUP BY Jockey, Trainer
+
 ORDER BY Wins DESC;
